@@ -2,31 +2,31 @@ services:
   - type: web
     name: baserow
     env: docker
-    plan: standard
-    dockerfilePath: ./deploy/render/Dockerfile
+    repo: https://github.com/KumbuBot/baserow
+    branch: main
+    plan: free
     envVars:
+      - key: BASEROW_PUBLIC_URL
+        value: https://baserow.onrender.com
       - key: SECRET_KEY
         generateValue: true
-      - key: PORT
-        value: 10000
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: baserow-redis
-          property: connectionString
       - key: DATABASE_URL
         fromDatabase:
           name: baserow-db
           property: connectionString
-      - key: BASEROW_AMOUNT_OF_WORKERS
-        value: 1
-      - key: BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION
-        value: false
+      - key: REDIS_URL
+        fromService:
+          name: baserow-redis
+          type: redis
+          property: connectionString
+
   - type: redis
     name: baserow-redis
     ipAllowList: []
+
+  - type: postgres
+    name: baserow-db
     plan: free
-    maxmemoryPolicy: noeviction
-databases:
-  - name: baserow-db
     ipAllowList: []
+    user: baserow
+    databaseName: baserow
